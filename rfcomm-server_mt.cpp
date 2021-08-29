@@ -13,6 +13,8 @@
 #include <sys/stat.h>
 #include <fcntl.h>
 #include "logic.hpp"
+#include "sw_timer.hpp"
+#include "pwm.hpp"
 using namespace std;
 
 
@@ -30,6 +32,8 @@ void write_to_file(string str);
 *main function
 *******************************************************************************/
 int main(){
+	sw_timer();
+	init_pwm();
 	pthread_mutex_init(&comm_mtx , NULL);
 	for(int i = 0; i < NUM_OF_THREADS; i++){
 		pthread_create(&_pt_arr[i], NULL, bt_comm, NULL );

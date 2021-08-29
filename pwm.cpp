@@ -2,6 +2,7 @@
 
 /*******************************************************************************
 * Sets up PWM.
+*https://abyz.me.uk/rpi/pigpio/cif.html
 *@param user_gpio - pin.
 *@param freq - frequency.
 *@param duty_cycle - the duty cycle.
@@ -16,4 +17,12 @@ int pwm_set(uint32_t user_gpio, uint32_t freq, uint32_t duty_cycle){
 	   return -1;
 	}
 	return 0;
+}
+
+/*******************************************************************************
+* Initiates PWM.
+*******************************************************************************/
+void init_pwm(void){
+	 pwm_set(19, 1000, 0);
+	
 }

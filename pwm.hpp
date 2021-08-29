@@ -13,4 +13,5 @@ using namespace std;
 #define MAX_WIDTH 2000
 
 int pwm_set(uint32_t user_gpio, uint32_t freq, uint32_t duty_cycle);
+void init_pwm(void);
 #endif
