@@ -1,10 +1,13 @@
 #ifndef PWM_HPP
 #define PWM_HPP
 #include <stdio.h>
+#include <iostream>
 #include <stdlib.h>
 #include <signal.h>
 #include <pigpio.h>
 #include <stdint.h>
+#include <pthread.h>
+#include <semaphore.h>
 using namespace std;
 
 #define NUM_GPIO 32

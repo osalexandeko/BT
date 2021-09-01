@@ -11,7 +11,6 @@ void tokenize(string const & str, const char delim, vector<string> & out){
 	size_t start = 0;
 	size_t end = 0;
  	string substr;
-	 
 	while(end != string::npos){
 		end = str.find(delim,start);
  		substr = str.substr(start,end - start);
@@ -21,7 +20,6 @@ void tokenize(string const & str, const char delim, vector<string> & out){
 	/*for(vector<string>::iterator it = out.begin();it != out.end();it++){
 		cout <<".."<<*it << endl;
 	} */
-	 
 }
 
 /*******************************************************************************
@@ -56,14 +54,12 @@ void logic_parser(char * buf ){
 			cout <<"Frequency cannot be greater than 30000[Hz]."<<endl;
 			return;
 		}
-		
 		uint32_t duty_cycle = stoi(commands[3]);
 		if(100 < duty_cycle){
 			cout <<"The duty sycle cannot be greater then 100%."<<endl;
 			return;
 		}
 		pwm_set(user_gpio, freq, duty_cycle*10000);
-		
 	}
 /*******************************************************************************
 *  PWM Update Duty Cycle.
@@ -77,20 +73,18 @@ void logic_parser(char * buf ){
 *******************************************************************************/
 	if(commands[0].compare("PWM_DS") == 0){
 		cout << "logic_parser: PWM_DS."<< endl;
-		
 		uint32_t user_gpio  = stoi(commands[1]);
 		if(19 != user_gpio){
 			cout <<"GPIO must be 19."<<endl;
 			return;
 		}
-		
 		uint32_t duty_cycle = stoi(commands[2]);
 		if(255 < duty_cycle){
-			cout <<"The duty sycle cannot be greater then 100%."<<endl;
+			cout <<"The duty sycle cannot be greater then 255%."<<endl;
 			return;
 		}
-		gpioPWM(user_gpio, duty_cycle);
-		
+		//gpioPWM(user_gpio, duty_cycle);
+		update_duty_cycle(duty_cycle);
 	}
 	else{
 		cout <<"logic_parser: Command is not recognized."<<endl;

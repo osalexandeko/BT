@@ -24,5 +24,5 @@ int pwm_set(uint32_t user_gpio, uint32_t freq, uint32_t duty_cycle){
 *******************************************************************************/
 void init_pwm(void){
 	 pwm_set(19, 1000, 0);
-	
 }
+

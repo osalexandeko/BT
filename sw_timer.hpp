@@ -5,16 +5,18 @@
 #include <time.h>
 #include <stdio.h>
 #include <signal.h>
-#include <pthread.h>
 #include <unistd.h>
 #include <errno.h>
 #include <iostream>
+#include <pthread.h>
+#include <semaphore.h>
+#include "pwm.hpp"
 
 using namespace std;
-int sw_timer(void);
 
 bool get_ms_passed(void);
-
 void reset_ms_passed(void);
-
+void update_duty_cycle(uint8_t dc);
+int setup_sw_timer(void);
+void delete_sw_timer(void);
 #endif

@@ -8,30 +8,23 @@
 #include <pthread.h>
 #include <iostream>
 #include <fstream>
-#include <string>
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <fcntl.h>
-#include "logic.hpp"
-#include "sw_timer.hpp"
-#include "pwm.hpp"
+
 using namespace std;
 
 
-#define NUM_OF_THREADS                         (1)
+#define NUM_OF_THREADS                                                 1
 void * bt_comm(void *);
 
 pthread_t _pt_arr[NUM_OF_THREADS];
-
 pthread_mutex_t comm_mtx;
-void write_to_file(string str);
 
 /*******************************************************************************
 *main function
 *******************************************************************************/
 int main(){
-	setup_sw_timer();
-	init_pwm();
 	pthread_mutex_init(&comm_mtx , NULL);
 	for(int i = 0; i < NUM_OF_THREADS; i++){
 		pthread_create(&_pt_arr[i], NULL, bt_comm, NULL );
@@ -39,16 +32,6 @@ int main(){
 	}
 	pthread_mutex_destroy(&comm_mtx);
 	return 0;
-}
-
-/*******************************************************************************
-*writes to file.
-*******************************************************************************/
-void write_to_file(string str, string filename){
-  ofstream fstrm;
-  fstrm.open (filename, ios::out | ios::app | ios::binary);
-  fstrm << str;
-  fstrm.close();
 }
 
 /*******************************************************************************
@@ -91,14 +74,14 @@ void * bt_comm(void * p)
 	client = accept(s, (struct sockaddr *)&rem_addr, &opt);
 	ba2str( &rem_addr.rc_bdaddr, buf );
 	fprintf(stderr, "accepted connection from %s \r\n", buf);
+	 
+	
 	do{
 		memset(buf, 0, sizeof(buf));
 		// read data from the client
 		bytes_read = read(client, buf, sizeof(buf));
 		if( bytes_read > 0 ) {
 			printf("\r\n received %s ", buf);
-			logic_parser(buf);
-			write_to_file(buf, "cmd.log");
 		}else{ 
 			
 			goto CLOSE_AND_EXIT;
@@ -108,6 +91,7 @@ void * bt_comm(void * p)
 		send(client, resp_buf, strlen(resp_buf),0);
 			
 	}while(bytes_read);
+	
 	CLOSE_AND_EXIT: 
     // close connection
 	printf("closeing the connection. \r\n "); 
