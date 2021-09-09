@@ -2,7 +2,7 @@
 //https://katastrophos.net/symbian-dev/GUID-B4039418-6499-555D-AC24-9B49161299F2.html
 
 static timer_t timerid;
-static pthread_t pwm_thread;
+extern pthread_t pwm_thread;
 sem_t pwm_step_sem;
 
 static uint8_t last_duty_cycle = 0; //The last duty cycle.
@@ -17,6 +17,7 @@ static void * pwm_step(void * param);
 void update_duty_cycle(uint8_t dc){
 	setup_sw_timer();
 	new_duty_cycle = dc;
+	sem_post(&pwm_step_sem);
 }
 
 /*******************************************************************************
@@ -25,7 +26,7 @@ void update_duty_cycle(uint8_t dc){
 void delete_sw_timer(void){
     //delete the timer.
 	timer_delete(timerid);
-	pthread_cancel(pwm_thread);
+	//pthread_cancel(pwm_thread);
 }
 
 /*******************************************************************************
@@ -88,15 +89,17 @@ void * pwm_step(void * param){
 			if(new_duty_cycle > last_duty_cycle){
 				last_duty_cycle++;
 				gpioPWM(19, last_duty_cycle);
-				//printf("%d \n",last_duty_cycle);
+				printf("%d \n",last_duty_cycle);
 			}
 			else
 			if(new_duty_cycle < last_duty_cycle){
 				last_duty_cycle--;
 				gpioPWM(19, last_duty_cycle);
-				//printf("%d \n",last_duty_cycle);
+				printf("%d \n",last_duty_cycle);
 			}else{
 				delete_sw_timer();
+				printf("\n pwm_step: pthread_exit\n");
+				pthread_exit(NULL);//BF_20210909_JOIN_PWM_THREAD
 			}
 		}
 	}

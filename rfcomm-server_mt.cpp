@@ -15,13 +15,16 @@
 #include "logic.hpp"
 #include "sw_timer.hpp"
 #include "pwm.hpp"
+#include "waiting_queue.hpp"
 using namespace std;
 
 
 #define NUM_OF_THREADS                         (1)
 void * bt_comm(void *);
 
-pthread_t _pt_arr[NUM_OF_THREADS];
+pthread_t pt_arr[NUM_OF_THREADS];
+pthread_t logic_thread;
+pthread_t pwm_thread;
 
 pthread_mutex_t comm_mtx;
 void write_to_file(string str);
@@ -33,9 +36,12 @@ int main(){
 	setup_sw_timer();
 	init_pwm();
 	pthread_mutex_init(&comm_mtx , NULL);
+	
+	pthread_create(&logic_thread, NULL, logic_task, NULL );
+	
 	for(int i = 0; i < NUM_OF_THREADS; i++){
-		pthread_create(&_pt_arr[i], NULL, bt_comm, NULL );
-		pthread_join(_pt_arr[i], NULL);
+		pthread_create(&pt_arr[i], NULL, bt_comm, NULL );
+		pthread_join(pt_arr[i], NULL);
 	}
 	pthread_mutex_destroy(&comm_mtx);
 	return 0;
@@ -56,6 +62,8 @@ void write_to_file(string str, string filename){
 *******************************************************************************/
 void * bt_comm(void * p)
 {
+	wqueue <string> * wqp = waiting_queue_get_wq();
+	
 	pthread_mutex_lock(&comm_mtx);
     struct sockaddr_rc loc_addr = { 0 }, rem_addr = { 0 };
     char buf[1024] = { 0 };
@@ -97,10 +105,14 @@ void * bt_comm(void * p)
 		bytes_read = read(client, buf, sizeof(buf));
 		if( bytes_read > 0 ) {
 			printf("\r\n received %s ", buf);
-			logic_parser(buf);
+			//logic_parser(buf);
+			
+			wqp->add(buf);
+			 
+			
 			write_to_file(buf, "cmd.log");
 		}else{ 
-			
+			printf("\r\n goto CLOSE_AND_EXIT. \r\n");
 			goto CLOSE_AND_EXIT;
 		}
 		
@@ -114,5 +126,11 @@ void * bt_comm(void * p)
     close(client);
 	close(s);
 	pthread_mutex_unlock(&comm_mtx);
+	//close msg parsing
+	pthread_cancel(logic_thread); 
+	
+	//close pwm task
+	pthread_cancel(pwm_thread); 
+	
     return NULL;
 }

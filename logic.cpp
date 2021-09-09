@@ -1,5 +1,8 @@
 #include "logic.hpp"
 #include "pwm.hpp" 
+#include "sw_timer.hpp"
+#include "waiting_queue.hpp"
+void logic_parser(string & msg );
  
 /*******************************************************************************
 * Tocenizesa string by delimeter.
@@ -22,15 +25,31 @@ void tokenize(string const & str, const char delim, vector<string> & out){
 	} */
 }
 
+
+/*******************************************************************************
+* Logic task.
+*@param param - parameter.
+*******************************************************************************/
+void * logic_task (void * param){
+	wqueue <string> * wqp = waiting_queue_get_wq();
+	string msg;
+	while(1){
+		msg = wqp->remove();
+		cout << "logic_task: " << msg <<endl;
+		logic_parser(msg);
+	}
+	return NULL;
+}
+
 /*******************************************************************************
 * Parses the charecter bufer.
 *@param buf - the buffer to parse.
 *******************************************************************************/
-void logic_parser(char * buf ){
+void logic_parser(string & msg ){
 	vector<string>  commands;
-	const string str(buf);
+	//const string str(buf);
 	const char delimiter =' ';
-	tokenize(str, delimiter, commands);
+	tokenize(msg, delimiter, commands);
 	
 /*******************************************************************************
 *  Example: 
