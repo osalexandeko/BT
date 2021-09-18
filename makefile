@@ -1,7 +1,7 @@
 CC=g++
 CFLAGS=-g -Wall   
 LFLAGS=-lpthread -lbluetooth -lpigpio -lrt
-TARGET = rf
+TARGET = rf_bt
 
 all: $(TARGET)
 $(TARGET): rfcomm-server_mt.o logic.o pwm.o sw_timer.o waiting_queue.o

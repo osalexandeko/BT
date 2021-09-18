@@ -122,7 +122,7 @@ void * bt_comm(void * p)
 	}while(bytes_read);
 	CLOSE_AND_EXIT: 
     // close connection
-	printf("closeing the connection. \r\n "); 
+	printf("closeing the connection, buy. \r\n "); 
     close(client);
 	close(s);
 	pthread_mutex_unlock(&comm_mtx);
